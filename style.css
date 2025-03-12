@@ -1,0 +1,32 @@
+body {
+    display: flex;
+    justify-content: flex-start; /* Align everything to the left */
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+    margin: 0;
+}
+
+#dashboard {
+    width: 200px;
+    height: 100vh;
+    background: #222;
+    color: white;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+#canvas-container {
+    position: absolute;
+    left: calc(50% + 100px); /* Shift canvas right to make space for dashboard */
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+canvas {
+    border: 2px solid black;
+}
