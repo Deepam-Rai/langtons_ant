@@ -10,6 +10,25 @@
     <div id="dashboard">
         <h2>Langton's Ant</h2>
         <p>Steps: <span id='stepCount'>0</span></p>
+        <p>Time Step: 
+            <input type="number" id="timeStep" value="100" min="1" step="1">
+        </p>
+        <p>
+            Rules: 
+            <select id="ruleSelect">
+                <option value="RL">RL (Classic)</option>
+                <option value="RLR">RLR (Grows chaotic)</option>
+                <option value="LLRR">LLRR (Grows symmetric)</option>
+                <option value="LRRRRRLLR">LRRRRRLLR (Square filling)</option>
+                <option value="LLRRRLRLRLLR">LLRRRLRLRLLR (Convoluted Highway)</option>
+                <option value="RRLLLRLLLRRR">RRLLLRLLLRRR (Filled growing triangle)</option>
+                <option value="custom">Custom</option>
+            </select>
+        </p>
+        <p>
+            Custom Rule: 
+            <input type="text" id="customRuleInput" placeholder="Enter rule (e.g., RLRL)" disabled>
+        </p>
     </div>
     <div id="canvas-container">
         <canvas id="antCanvas"></canvas>
