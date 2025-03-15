@@ -2,7 +2,7 @@ const WIDTH = 700;
 const HEIGHT = 700;
 const GRID_SIZE = 10;
 const DEF_COLOR = 'white';
-const DEF_TIME_STEP = 100;
+const DEF_TIME_STEP = 500;
 const Direction = {
     UP: 0,
     RIGHT: 1,
@@ -12,14 +12,19 @@ const Direction = {
 const DirectionReverse = Object.fromEntries(Object.entries(Direction).map(([key, value]) => [value, key]));
 
 // time interval between steps
-const timeStep = document.getElementById("timeStep");
-timeStep.addEventListener("input", function () {
-    let value = parseInt(this.value, DEF_TIME_STEP);
+const timeStepInput = document.getElementById("timeStep");
+let timeStep = DEF_TIME_STEP;
+timeStepInput.value = timeStep;
+// reflect html change on javascript var
+timeStepInput.addEventListener("input", function () {
+    let value = parseInt(this.value);
     // Ensure the value is a positive integer
     if (isNaN(value) || value < 1) {
         this.value = DEF_TIME_STEP; 
         value = DEF_TIME_STEP;
     }
+    console.log(`new timeStep:${value}`);
+    timeStep = value;
     updateTimeStep(value);
 });
 
@@ -35,19 +40,40 @@ console.log("Canvas initialized");
 const cols = canvas.width / GRID_SIZE;
 const rows = canvas.height / GRID_SIZE;
 
+// set initial direction of ant
+const initialDirectionInput = document.getElementById("initialDirectionSelect");
+let initialDirection = initialDirectionInput.value;
+// make sure that when value chagnes in html it changes the javscript value
+initialDirectionInput.addEventListener("change", function () {
+    initialDirection = this.value;
+    console.log(`new initial direction:${initialDirection}`);
+});
+
 // create grid and ant
 let grid;
 let ant;
 
 // set the field
+let antCount = 0;
 let steps = 0;
-function resetField() {
-    grid = Array.from({ length: rows}, () => Array(cols).fill(0));
-    ant = {
+function createAnt() {
+    function getRandomDirection() {
+        const entries = Object.values(Direction);
+        return entries[Math.floor(Math.random() * entries.length)];
+    }
+    let direction = initialDirection === "random" ? getRandomDirection() : Direction[initialDirection.toUpperCase()];
+    let newAnt = {
         x: Math.floor(cols / 2),
         y: Math.floor(rows / 2),
-        direction: Direction.LEFT
+        direction: direction
     };
+    antCount++;
+    console.log(`ant #${antCount}: ${JSON.stringify(newAnt)}`);
+    return newAnt;
+}
+function resetField() {
+    grid = Array.from({ length: rows}, () => Array(cols).fill(0));
+    ant = createAnt();
     steps = 0;
     document.getElementById("stepCount").textContent = steps;
 }
@@ -61,15 +87,20 @@ let ruleLength = colors.length;
 // update based upon UI elements
 const ruleSelect = document.getElementById("ruleSelect");
 const customRuleInput = document.getElementById("customRuleInput");
-const COLORS = ["black", "red", "blue", "green", "yellow", "purple", "orange"];
+const COLORS = ["black", "blue", "green", "yellow", "purple", "orange"];
 // update rules based on selection
 function updateRules(ruleString) {
+    function generateColors(n) {
+        return Array.from({ length: n }, (_, i) => `hsl(${(i * 360 / n) % 360}, 100%, 50%)`);
+    }
     let moves = [];
     for (let char of ruleString) {
         moves.push(char === 'R' ? Direction.RIGHT : Direction.LEFT);
     }
+    console.log(`new rules: ${moves}`);
     // Generate colors based on rule length
-    colors = [DEF_COLOR, ...COLORS.slice(0, moves.length - 1)];
+    // colors = [DEF_COLOR, ...COLORS.slice(0, moves.length - 1)];
+    colors = [DEF_COLOR, ...generateColors(moves.length-1)];
     // Update global rule variables
     nextMoves = moves;
     ruleLength = moves.length;
@@ -142,8 +173,36 @@ function drawGrid() {
 }
 
 function drawAnt() {
-    ctx.fillStyle = 'red';
-    ctx.fillRect(ant.x * GRID_SIZE, ant.y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+    const { x, y, direction } = ant;
+    const size = GRID_SIZE; 
+    const centerX = x * size + size / 2;
+    const centerY = y * size + size / 2;
+
+    ctx.fillStyle = 'black';
+    ctx.beginPath();
+
+    // Calculate triangle points based on direction
+    let points = [];
+    switch (direction) {
+        case Direction.UP:
+            points = [[-size / 3, size / 3], [size / 3, size / 3], [0, -size / 3]];
+            break;
+        case Direction.RIGHT:
+            points = [[-size / 3, -size / 3], [-size / 3, size / 3], [size / 3, 0]];
+            break;
+        case Direction.DOWN:
+            points = [[-size / 3, -size / 3], [size / 3, -size / 3], [0, size / 3]];
+            break;
+        case Direction.LEFT:
+            points = [[size / 3, -size / 3], [size / 3, size / 3], [-size / 3, 0]];
+            break;
+    }
+    // Draw the triangle
+    ctx.moveTo(centerX + points[0][0], centerY + points[0][1]);
+    ctx.lineTo(centerX + points[1][0], centerY + points[1][1]);
+    ctx.lineTo(centerX + points[2][0], centerY + points[2][1]);
+    ctx.closePath();
+    ctx.fill();
 }
 
 function update() {

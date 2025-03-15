@@ -11,7 +11,7 @@
         <h2>Langton's Ant</h2>
         <p>Steps: <span id='stepCount'>0</span></p>
         <p>Time Step: 
-            <input type="number" id="timeStep" value="100" min="1" step="1">
+            <input type="number" id="timeStep" min="1" step="1">
         </p>
         <p>
             Rules: 
@@ -28,6 +28,16 @@
         <p>
             Custom Rule: 
             <input type="text" id="customRuleInput" placeholder="Enter rule (e.g., RLRL)" disabled>
+        </p>
+        <p>
+            Initial direction: 
+            <select id="initialDirectionSelect">
+                <option value="random">Random</option>
+                <option value="up">Up</option>
+                <option value="right">Right</option>
+                <option value="down">Down</option>
+                <option value="left">Left</option>
+            </select>
         </p>
     </div>
     <div id="canvas-container">
