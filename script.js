@@ -51,6 +51,9 @@ initialDirectionInput.addEventListener("change", function () {
 
 // create grid and ant
 let grid;
+let gridDraw;  // determines which grid to draw
+let gridVisit;  // tracks visits to each cell
+let maxVisit = 0;  // max number of visit to cell
 let ant;
 
 // set the field
@@ -73,12 +76,20 @@ function createAnt() {
 }
 function resetField() {
     grid = Array.from({ length: rows}, () => Array(cols).fill(0));
+    gridVisit = Array.from({ length: rows}, () => Array(cols).fill(0));
     ant = createAnt();
     steps = 0;
     document.getElementById("stepCount").textContent = steps;
 }
 resetField();
 
+// bind gridDraw
+const gridDrawInput = document.getElementById("drawGridSelect");
+gridDraw = gridDrawInput.value;
+gridDrawInput.addEventListener("change", function () {
+    gridDraw = this.value;
+    console.log(`new grid to draw:${gridDraw}`);
+});
 
 // define ant rules
 let colors = [DEF_COLOR, 'black'];
@@ -89,15 +100,23 @@ const ruleSelect = document.getElementById("ruleSelect");
 const customRuleInput = document.getElementById("customRuleInput");
 const COLORS = ["black", "blue", "green", "yellow", "purple", "orange"];
 // update rules based on selection
+function generateColors(n, baseHue = null) {
+    return Array.from(
+        { length: n },
+        (_, i) => {
+            let hue = baseHue !== null ? baseHue : (i * 360/n) % 360;
+            let saturation = 100;
+            let lightness = baseHue !== null ? (30 + (i * 50/n)) : 50;  // monotonous : lightness varies
+            return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+        }
+    );
+}
 function updateRules(ruleString) {
-    function generateColors(n) {
-        return Array.from({ length: n }, (_, i) => `hsl(${(i * 360 / n) % 360}, 100%, 50%)`);
-    }
     let moves = [];
     for (let char of ruleString) {
         moves.push(char === 'R' ? Direction.RIGHT : Direction.LEFT);
     }
-    console.log(`new rules: ${moves}`);
+    console.log(`new rules: ${ruleString}`);
     // Generate colors based on rule length
     // colors = [DEF_COLOR, ...COLORS.slice(0, moves.length - 1)];
     colors = [DEF_COLOR, ...generateColors(moves.length-1)];
@@ -148,6 +167,9 @@ function moveAnt() {
         nextMoves[currentRule]
     );
     grid[ant.y][ant.x] = (currentRule + 1) % ruleLength;
+    gridVisit[ant.y][ant.x] += 1;
+    maxVisit = Math.max(maxVisit, gridVisit[ant.y][ant.x]);
+    document.getElementById("maxVisit").textContent = maxVisit;
     if (ant.direction == Direction.UP) ant.y -= 1;
     if (ant.direction == Direction.RIGHT) ant.x += 1;
     if (ant.direction == Direction.DOWN) ant.y += 1;
@@ -159,9 +181,14 @@ function moveAnt() {
 }
 
 function drawGrid() {
+    visitColors = [DEF_COLOR, ...generateColors(Math.max(maxVisit-1, 10), 0).reverse()];
     for (let y = 0; y < rows; y++) {
         for(let x = 0; x< cols; x++) {
-            ctx.fillStyle = colors[grid[y][x]];
+            if ( gridDraw === "grid") {
+                ctx.fillStyle = colors[grid[y][x]];
+            } else if ( gridDraw === "visit") {
+                ctx.fillStyle = visitColors[gridVisit[y][x]];
+            }
             let posX = Math.floor(x * GRID_SIZE);
             let posY = Math.floor(y * GRID_SIZE);
             let size = Math.floor(GRID_SIZE);

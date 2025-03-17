@@ -9,7 +9,12 @@
 <body>
     <div id="dashboard">
         <h2>Langton's Ant</h2>
-        <p>Steps: <span id='stepCount'>0</span></p>
+        <p>
+            Steps: <span id='stepCount'>0</span>
+        </p>
+        <p>
+            Max visit: <span id='maxVisit'></span>
+        </p>
         <p>Time Step: 
             <input type="number" id="timeStep" min="1" step="1">
         </p>
@@ -22,6 +27,7 @@
                 <option value="LRRRRRLLR">LRRRRRLLR (Square filling)</option>
                 <option value="LLRRRLRLRLLR">LLRRRLRLRLLR (Convoluted Highway)</option>
                 <option value="RRLLLRLLLRRR">RRLLLRLLLRRR (Filled growing triangle)</option>
+                <option value="RLRRRLRRRLRLRLR">RLRRRLRRRLRLRLR (The Glitch Spread)</option>
                 <option value="custom">Custom</option>
             </select>
         </p>
@@ -37,6 +43,13 @@
                 <option value="right">Right</option>
                 <option value="down">Down</option>
                 <option value="left">Left</option>
+            </select>
+        </p>
+        <p>
+            Draw grid: 
+            <select id="drawGridSelect">
+                <option value="grid">Usual Grid</option>
+                <option value="visit">Visits</option>
             </select>
         </p>
     </div>
