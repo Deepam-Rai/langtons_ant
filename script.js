@@ -2,15 +2,30 @@ const WIDTH = 700;
 const HEIGHT = 700;
 const GRID_SIZE = 10;
 const DEF_COLOR = 'white';
-const DEF_TIME_STEP = 500;
+const DEF_TIME_STEP = 100;
 const Direction = {
     UP: 0,
-    RIGHT: 1,
-    DOWN: 2,
-    LEFT: 3
+    UP_RIGHT: 1,
+    RIGHT: 2,
+    DOWN_RIGHT: 3,
+    DOWN: 4,
+    DOWN_LEFT: 5,
+    LEFT: 6,
+    UP_LEFT: 7,
+    REST: -1
 }
 const DirectionReverse = Object.fromEntries(Object.entries(Direction).map(([key, value]) => [value, key]));
-
+// const RelativeDirection = {
+//     FRONT: 8,
+//     RIGHT: 6,
+//     BACK: 2,
+//     LEFT: 4,
+//     FRONT_LEFT: 7,
+//     FRONT_RIGHT: 9,
+//     BACK_RIGHT: 3,
+//     BACK_LEFT: 1,
+//     REST: 5
+// }
 // time interval between steps
 const timeStepInput = document.getElementById("timeStep");
 let timeStep = DEF_TIME_STEP;
@@ -114,11 +129,38 @@ function generateColors(n, baseHue = null) {
 function updateRules(ruleString) {
     let moves = [];
     for (let char of ruleString) {
-        moves.push(char === 'R' ? Direction.RIGHT : Direction.LEFT);
+        switch (char) {
+            case 'U':
+                moves.push(Direction.UP);
+                break;
+            case 'X':
+                moves.push(Direction.UP_RIGHT);
+                break;
+            case 'R':
+                moves.push(Direction.RIGHT);
+                break;
+            case 'Y':
+                moves.push(Direction.DOWN_RIGHT);
+                break;
+            case 'D':
+                moves.push(Direction.DOWN);
+                break;
+            case 'Z':
+                moves.push(Direction.DOWN_LEFT);
+                break;
+            case 'L':
+                moves.push(Direction.LEFT);
+                break;
+            case 'W':
+                moves.push(Direction.UP_LEFT);
+                break;
+            case 'O':
+                moves.push(Direction.REST);
+                break;
+        }
     }
     console.log(`new rules: ${ruleString}`);
     // Generate colors based on rule length
-    // colors = [DEF_COLOR, ...COLORS.slice(0, moves.length - 1)];
     colors = [DEF_COLOR, ...generateColors(moves.length-1)];
     // Update global rule variables
     nextMoves = moves;
@@ -140,7 +182,7 @@ ruleSelect.addEventListener("change", function () {
 
 // Handle custom rule input
 customRuleInput.addEventListener("input", function () {
-    let ruleString = this.value.toUpperCase().replace(/[^RL]/g, ""); // Allow only R and L
+    let ruleString = this.value.toUpperCase().replace(/[^RLWXYZO]/g, ""); // Allow only R and L
     if (ruleString.length > 0) {
         updateRules(ruleString);
     }
@@ -155,9 +197,40 @@ function relativeDirection(current, next) {
      * current: current direction; e.g. UP, DOWN, etc
      * next: relative direction to the current direction; e.g. LEFT/RIGHT to current direction
      */
-    let directions = [Direction.LEFT, Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT, Direction.UP];
-    let offset = next == Direction.LEFT ? -1 : 1;
-    return directions[(current + 1) + offset];
+    if (next === Direction.REST) {
+        return Direction.REST;
+    }
+    let directions = [
+        Direction.UP, Direction.UP_RIGHT, Direction.RIGHT, Direction.DOWN_RIGHT,
+        Direction.DOWN, Direction.DOWN_LEFT, Direction.LEFT, Direction.UP_LEFT
+    ];
+    switch (next) {
+        case Direction.UP:
+            offset = 0;
+            break;
+        case Direction.UP_RIGHT:
+            offset = +1;
+            break;
+        case Direction.RIGHT:
+            offset = +2;
+            break;
+        case Direction.DOWN_RIGHT:
+            offset = +3;
+            break;
+        case Direction.DOWN:
+            offset = +4;
+            break;
+        case Direction.DOWN_LEFT:
+            offset = +5;
+            break;
+        case Direction.LEFT:
+            offset = +6;
+            break;
+        case Direction.UP_LEFT:
+            offset = +7;
+            break;
+    }
+    return directions[(current + offset) % directions.length];
 }
 
 function moveAnt() {
@@ -170,10 +243,38 @@ function moveAnt() {
     gridVisit[ant.y][ant.x] += 1;
     maxVisit = Math.max(maxVisit, gridVisit[ant.y][ant.x]);
     document.getElementById("maxVisit").textContent = maxVisit;
-    if (ant.direction == Direction.UP) ant.y -= 1;
-    if (ant.direction == Direction.RIGHT) ant.x += 1;
-    if (ant.direction == Direction.DOWN) ant.y += 1;
-    if (ant.direction == Direction.LEFT) ant.x -= 1;
+    switch (ant.direction) {
+        case Direction.UP:
+            ant.y -= 1;
+            break;
+        case Direction.RIGHT:
+            ant.x += 1;
+            break;
+        case Direction.DOWN:
+            ant.y += 1;
+            break;
+        case Direction.LEFT:
+            ant.x -= 1;
+            break;
+        case Direction.UP_LEFT:
+            ant.x -= 1;
+            ant.y -= 1;
+            break;
+        case Direction.UP_RIGHT:
+            ant.x += 1;
+            ant.y -= 1;
+            break;
+        case Direction.DOWN_RIGHT:
+            ant.x += 1;
+            ant.y += 1;
+            break;
+        case Direction.DOWN_LEFT:
+            ant.x -= 1;
+            ant.y += 1;
+            break;
+        case Direction.REST:
+            break;
+    }
 
     // dont go beyond edges
     ant.x = (ant.x + cols) % cols;
@@ -208,29 +309,58 @@ function drawAnt() {
     ctx.fillStyle = 'black';
     ctx.beginPath();
 
-    // Calculate triangle points based on direction
-    let points = [];
-    switch (direction) {
-        case Direction.UP:
-            points = [[-size / 3, size / 3], [size / 3, size / 3], [0, -size / 3]];
-            break;
-        case Direction.RIGHT:
-            points = [[-size / 3, -size / 3], [-size / 3, size / 3], [size / 3, 0]];
-            break;
-        case Direction.DOWN:
-            points = [[-size / 3, -size / 3], [size / 3, -size / 3], [0, size / 3]];
-            break;
-        case Direction.LEFT:
-            points = [[size / 3, -size / 3], [size / 3, size / 3], [-size / 3, 0]];
-            break;
+    if (direction === Direction.REST) {
+        // Draw a circle for REST mode
+        ctx.arc(centerX, centerY, size / 3, 0, 2 * Math.PI);
+    } else {
+        function rotatePoint(x, y, angle) {
+            let radians = angle * Math.PI / 180;
+            let cosA = Math.cos(radians);
+            let sinA = Math.sin(radians);
+            return [
+                x * cosA - y * sinA, // Rotated X
+                x * sinA + y * cosA  // Rotated Y
+            ];
+        }
+        let transformAngle = 0;  // in degrees
+        switch (direction) {
+            case Direction.UP:
+                transformAngle = 0;
+                break;
+            case Direction.RIGHT:
+                transformAngle = 90;
+                break;
+            case Direction.DOWN:
+                transformAngle = 180;
+                break;
+            case Direction.LEFT:
+                transformAngle = -90;
+                break;
+            case Direction.UP_LEFT:
+                transformAngle = -45;
+                break;
+            case Direction.UP_RIGHT:
+                transformAngle = 45;
+                break;
+            case Direction.DOWN_RIGHT:
+                transformAngle = 135;
+                break;
+            case Direction.DOWN_LEFT:
+                transformAngle = -135;
+                break;
+        }
+        let points = [[-size / 3, size / 3], [0, size / 6], [size / 3, size / 3], [0, -size / 2]];
+        points = points.map(point => rotatePoint(point[0], point[1], transformAngle));
+        // Draw a triangle for movement
+        ctx.moveTo(centerX + points[0][0], centerY + points[0][1]);
+        for (let i=1; i<points.length; i++) {
+            ctx.lineTo(centerX + points[i][0], centerY + points[i][1]);
+        }
+        ctx.closePath();
     }
-    // Draw the triangle
-    ctx.moveTo(centerX + points[0][0], centerY + points[0][1]);
-    ctx.lineTo(centerX + points[1][0], centerY + points[1][1]);
-    ctx.lineTo(centerX + points[2][0], centerY + points[2][1]);
-    ctx.closePath();
     ctx.fill();
 }
+
 
 function update() {
     moveAnt();
