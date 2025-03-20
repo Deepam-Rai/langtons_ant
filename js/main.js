@@ -1,16 +1,11 @@
 import {
-    WIDTH, HEIGHT, GRID_SIZE,
-    DEF_COLOR, DEF_TIME_STEP,
-    Direction,
-    RULES, VISITS
-} from "./constants.js"
+    WIDTH, HEIGHT, DEF_COLOR, DEF_TIME_STEP,
+} from "./constants.js";
 import {
-    generateColors,
-    relativeDirection, getNextRelativePosition, getRandomDirection, relativeDirectionToAngle,
-    ruleStringToMoves
+    generateColors, ruleStringToMoves
 } from "./utils.js";
-import { drawGrid } from "./renders.js";
 import { Ant } from "./ant.js";
+import { Grids } from "./grids.js";
 
 
 let configs = {
@@ -19,7 +14,7 @@ let configs = {
     "colors": [],
     "nextMoves": [],
     "ruleLength": 0,
-}
+};
 
 // time interval between steps
 const timeStepInput = document.getElementById("timeStep");
@@ -56,22 +51,13 @@ initialDirectionInput.addEventListener("change", function () {
     console.log(`new initial direction:${configs.initialDirection}`);
 });
 
-// create grid and ant
-let grids = {
-    RULES: null,
-    VISITS: null,
-    "maxVisit": 0
-};
-let gridDraw;  // determines which grid to draw
+let grids = new Grids(canvas, configs);
 let ant;
 
 // set the field
 let steps = 0;
 function resetField() {
-    grids.cols = canvas.width / GRID_SIZE;
-    grids.rows = canvas.height / GRID_SIZE;
-    grids[RULES] = Array.from({ length: grids.rows}, () => Array(grids.cols).fill(0));
-    grids[VISITS] = Array.from({ length: grids.rows}, () => Array(grids.cols).fill(0));
+    grids.reset();
     ant = new Ant(ctx, grids, configs);
     steps = 0;
     document.getElementById("stepCount").textContent = steps;
@@ -80,10 +66,10 @@ resetField();
 
 // bind gridDraw
 const gridDrawInput = document.getElementById("drawGridSelect");
-gridDraw = gridDrawInput.value;
+configs.gridDraw = gridDrawInput.value;
 gridDrawInput.addEventListener("change", function () {
-    gridDraw = this.value;
-    console.log(`new grid to draw:${gridDraw}`);
+    configs.gridDraw = this.value;
+    console.log(`new grid to draw:${configs.gridDraw}`);
 });
 
 // define ant rules
@@ -127,7 +113,8 @@ updateRules(ruleSelect.value);
 
 
 function update() {
-    drawGrid(ctx, grids, gridDraw, configs.colors);
+    // drawGrid(ctx, grids, configs.gridDraw, configs.colors);
+    grids.draw();
     ant.draw();
     ant.move();
 
