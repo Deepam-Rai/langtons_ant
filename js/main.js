@@ -6,127 +6,73 @@ import {
 } from "./utils.js";
 import { Ant } from "./ant.js";
 import { Grids } from "./grids.js";
+import {
+    bindTimeStep, bindInitialDirection, bindGridDraw, bindDropdownRules, bindCustomRules
+} from "./binders.js";
 
 
-let configs = {
-    "timeStep": DEF_TIME_STEP,
-    "initialDirection": null,
-    "colors": [],
-    "nextMoves": [],
-    "ruleLength": 0,
-};
-
-// time interval between steps
-const timeStepInput = document.getElementById("timeStep");
-configs.timeStep = DEF_TIME_STEP;
-timeStepInput.value = configs.timeStep;
-// reflect html change on javascript var
-timeStepInput.addEventListener("input", function () {
-    let value = parseInt(this.value);
-    // Ensure the value is a positive integer
-    if (isNaN(value) || value < 1) {
-        this.value = DEF_TIME_STEP; 
-        value = DEF_TIME_STEP;
+let metas = {
+    "canvas": document.getElementById("antCanvas"),
+    "simulation": null,
+    "steps": 0,
+    "ant": null,
+    "grids": null,
+    "configs": {
+        "timeStep": DEF_TIME_STEP,
+        "initialDirection": null,
+        "colors": [],
+        "nextMoves": [],
+        "ruleLength": 0,
     }
-    console.log(`new timeStep:${value}`);
-    configs.timeStep = value;
-    updateTimeStep(value);
-});
+};
+metas.ctx = metas.canvas.getContext("2d");
+metas.canvas.width = Math.min(WIDTH, window.innerWidth - 20);
+metas.canvas.height = Math.min(HEIGHT, window.innerHeight - 20);
 
-// set field canvas
-const canvas = document.getElementById("antCanvas");
-const ctx = canvas.getContext("2d");
 
-canvas.width = Math.min(WIDTH, window.innerWidth - 20);
-canvas.height = Math.min(HEIGHT, window.innerHeight - 20);
+metas.grids = new Grids(metas.canvas, metas.configs);
 
-console.log("Canvas initialized");
 
-// set initial direction of ant
-const initialDirectionInput = document.getElementById("initialDirectionSelect");
-configs.initialDirection = initialDirectionInput.value;
-// make sure that when value chagnes in html it changes the javscript value
-initialDirectionInput.addEventListener("change", function () {
-    configs.initialDirection = this.value;
-    console.log(`new initial direction:${configs.initialDirection}`);
-});
-
-let grids = new Grids(canvas, configs);
-let ant;
-
-// set the field
-let steps = 0;
-function resetField() {
-    grids.reset();
-    ant = new Ant(ctx, grids, configs);
-    steps = 0;
-    document.getElementById("stepCount").textContent = steps;
+export function resetField() {
+    metas.grids.reset();
+    metas.ant = new Ant(metas.ctx, metas.grids, metas.configs);
+    metas.steps = 0;
+    document.getElementById("stepCount").textContent = metas.steps;
 }
-resetField();
 
-// bind gridDraw
-const gridDrawInput = document.getElementById("drawGridSelect");
-configs.gridDraw = gridDrawInput.value;
-gridDrawInput.addEventListener("change", function () {
-    configs.gridDraw = this.value;
-    console.log(`new grid to draw:${configs.gridDraw}`);
-});
 
-// define ant rules
-configs.colors = [];
-configs.nextMoves = [];
-configs.ruleLength = configs.nextMoves.length;
-// update based upon UI elements
-const ruleSelect = document.getElementById("ruleSelect");
-const customRuleInput = document.getElementById("customRuleInput");
-// update rules based on selection
-function updateRules(ruleString) {    
-    configs.nextMoves = ruleStringToMoves(ruleString);
+export function updateRules(ruleString) {    
+    metas.configs.nextMoves = ruleStringToMoves(ruleString);
     // Generate colors based on rule length
-    configs.colors = [DEF_COLOR, ...generateColors(configs.nextMoves.length-1)];
-    configs.ruleLength = configs.nextMoves.length;
+    metas.configs.colors = [DEF_COLOR, ...generateColors(metas.configs.nextMoves.length-1)];
+    metas.configs.ruleLength = metas.configs.nextMoves.length;
     resetField();
     console.log(`new rules: ${ruleString}`);
 }
 
-// Handle rules dropdown change
-ruleSelect.addEventListener("change", function () {
-    if (this.value === "custom") {
-        customRuleInput.disabled = false;
-        customRuleInput.value = ""; // Clear input
-    } else {
-        customRuleInput.disabled = true;
-        updateRules(this.value);
-    }
-});
 
-// Handle custom rule input
-customRuleInput.addEventListener("input", function () {
-    let ruleString = this.value.toUpperCase().replace(/[^RLWXYZO]/g, ""); // Allow only R and L
-    if (ruleString.length > 0) {
-        updateRules(ruleString);
-    }
-});
+// bind dashboard inputs with javascript variables
+bindTimeStep(metas.configs, metas);
+bindInitialDirection(metas.configs)
+bindGridDraw(metas.configs)
+bindDropdownRules();
+bindCustomRules();
+
 
 // Initialize with default rule
 updateRules(ruleSelect.value);
 
 
-function update() {
-    // drawGrid(ctx, grids, configs.gridDraw, configs.colors);
-    grids.draw();
-    ant.draw();
-    ant.move();
+export function updateSimulation() {
+    metas.grids.draw();
+    metas.ant.draw();
+    metas.ant.move();
 
-    steps++;
-    document.getElementById("stepCount").textContent = steps;
+    metas.steps++;
+    document.getElementById("stepCount").textContent = metas.steps;
 }
 
 
-// run the simulation
-let simulation = setInterval( update, configs.timeStep);
+// start the simulation
+metas.simulation = setInterval( updateSimulation, metas.configs.timeStep);
 
-function updateTimeStep(newTimeStep) {
-    clearInterval(simulation); // Stop the current loop
-    simulation = setInterval(update, newTimeStep); // Restart with new interval
-}

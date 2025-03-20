@@ -1,4 +1,5 @@
 import { Direction } from "./constants.js";
+import { Ant } from "./ant.js";
 
 export function generateColors(n, baseHue = null) {
     return Array.from(
@@ -165,4 +166,11 @@ export function relativeDirectionToAngle(direction) {
             break;
     }
     return angle;
+}
+
+export function resetField(grids, configs, ant, metas) {
+    grids.reset();
+    ant = new Ant(metas.ctx, grids, configs);
+    metas.steps = 0;
+    document.getElementById("stepCount").textContent = metas.steps;
 }

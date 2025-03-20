@@ -1,5 +1,5 @@
 import { RULES, VISITS, GRID_SIZE, Direction } from "./constants.js";
-import { relativeDirection, getNextRelativePosition, relativeDirectionToAngle } from "./utils.js";
+import { relativeDirection, getNextRelativePosition, relativeDirectionToAngle, getRandomDirection } from "./utils.js";
 
 
 export class Ant {
