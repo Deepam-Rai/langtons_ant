@@ -9,7 +9,8 @@ import {
     relativeDirection, getNextRelativePosition, getRandomDirection, relativeDirectionToAngle,
     ruleStringToMoves
 } from "./utils.js";
-import { drawGrid, drawAnt } from "./renders.js";
+import { drawGrid } from "./renders.js";
+import { Ant } from "./ant.js";
 
 
 let configs = {
@@ -65,29 +66,17 @@ let gridDraw;  // determines which grid to draw
 let ant;
 
 // set the field
-let antCount = 0;
 let steps = 0;
 function resetField() {
     grids.cols = canvas.width / GRID_SIZE;
     grids.rows = canvas.height / GRID_SIZE;
     grids[RULES] = Array.from({ length: grids.rows}, () => Array(grids.cols).fill(0));
     grids[VISITS] = Array.from({ length: grids.rows}, () => Array(grids.cols).fill(0));
-    ant = createAnt();
+    ant = new Ant(ctx, grids, configs);
     steps = 0;
     document.getElementById("stepCount").textContent = steps;
 }
 resetField();
-function createAnt() {
-    let direction = configs.initialDirection === "random" ? getRandomDirection() : Direction[configs.initialDirection.toUpperCase()];
-    let newAnt = {
-        x: Math.floor(grids.cols / 2),
-        y: Math.floor(grids.rows / 2),
-        direction: direction
-    };
-    antCount++;
-    console.log(`ant #${antCount}: ${JSON.stringify(newAnt)}`);
-    return newAnt;
-}
 
 // bind gridDraw
 const gridDrawInput = document.getElementById("drawGridSelect");
@@ -136,32 +125,11 @@ customRuleInput.addEventListener("input", function () {
 // Initialize with default rule
 updateRules(ruleSelect.value);
 
-// ant's behaviour
-function moveAnt() {
-    let currentRule = grids[RULES][ant.y][ant.x];
-    ant.direction = relativeDirection(
-        ant.direction,
-        configs.nextMoves[currentRule]
-    );
-    grids[RULES][ant.y][ant.x] = (currentRule + 1) % configs.ruleLength;
-    grids[VISITS][ant.y][ant.x] += 1;
-    grids.maxVisit = Math.max(maxVisit, grids[VISITS][ant.y][ant.x]);
-    document.getElementById("maxVisit").textContent = grids.maxVisit;
-    let x_offset=0, y_offset=0;
-    [x_offset, y_offset] = getNextRelativePosition(ant.direction);
-    ant.x += x_offset;
-    ant.y += y_offset;
-
-    // dont go beyond edges
-    ant.x = (ant.x + grids.cols) % grids.cols;
-    ant.y = (ant.y + grids.rows) % grids.rows;
-}
-
 
 function update() {
     drawGrid(ctx, grids, gridDraw, configs.colors);
-    drawAnt(ctx, ant);
-    moveAnt();
+    ant.draw();
+    ant.move();
 
     steps++;
     document.getElementById("stepCount").textContent = steps;
