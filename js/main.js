@@ -7,7 +7,7 @@ import {
 import { Ant } from "./ant.js";
 import { Grids } from "./grids.js";
 import {
-    bindTimeStep, bindInitialDirection, bindGridDraw, bindDropdownRules, bindCustomRules
+    bindTimeStep, bindInitialDirection, bindSpawnLocation, bindGridDraw, bindDropdownRules, bindCustomRules
 } from "./binders.js";
 
 
@@ -20,6 +20,7 @@ let metas = {
     "configs": {
         "timeStep": DEF_TIME_STEP,
         "initialDirection": null,
+        "spawnLocation": "random",
         "colors": [],
         "nextMoves": [],
         "ruleLength": 0,
@@ -53,8 +54,9 @@ export function updateRules(ruleString) {
 
 // bind dashboard inputs with javascript variables
 bindTimeStep(metas.configs, metas);
-bindInitialDirection(metas.configs)
-bindGridDraw(metas.configs)
+bindInitialDirection(metas.configs);
+bindSpawnLocation(metas.configs);
+bindGridDraw(metas.configs);
 bindDropdownRules();
 bindCustomRules();
 

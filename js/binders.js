@@ -30,6 +30,15 @@ export function bindInitialDirection(configs) {
     });
 }
 
+export function bindSpawnLocation(configs) {
+    const input = document.getElementById("spawnLocation");
+    configs.spawnLocation = input.value;
+    input.addEventListener("change", function () {
+        configs.spawnLocation = this.value;
+        console.log(`new spawn location:${configs.spawnLocation}`);
+    });
+}
+
 export function bindGridDraw(configs) {
     const gridDrawInput = document.getElementById("drawGridSelect");
     configs.gridDraw = gridDrawInput.value;
