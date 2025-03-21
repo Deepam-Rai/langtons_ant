@@ -1,6 +1,6 @@
 // binds html dashboard values to javascript variables
 
-import { DEF_TIME_STEP } from "./constants.js";
+import { DEF_TIME_STEP, DEF_ANT_COUNT } from "./constants.js";
 import { updateSimulation, updateRules } from "./main.js";
 
 // bind time interval between steps
@@ -8,7 +8,7 @@ export function bindTimeStep(configs, metas){
     const timeStepInput = document.getElementById("timeStep");
     configs.timeStep = DEF_TIME_STEP;
     timeStepInput.value = configs.timeStep;
-    timeStepInput.addEventListener("input", function () {
+    timeStepInput.addEventListener("change", function () {
         let value = parseInt(this.value);
         if (isNaN(value) || value < 1) {
             this.value = DEF_TIME_STEP; 
@@ -18,6 +18,21 @@ export function bindTimeStep(configs, metas){
         configs.timeStep = value;
         clearInterval(metas.simulation); // Stop the current loop
         metas.simulation = setInterval(updateSimulation, configs.timeStep); // Restart with new interval
+    });
+}
+
+export function bindAntCount(configs){
+    const input = document.getElementById("antCount");
+    configs.antCount = DEF_ANT_COUNT;
+    input.value = configs.antCount;
+    input.addEventListener("change", function () {
+        let value = parseInt(this.value);
+        if (isNaN(value) || value < 0) {
+            this.value = DEF_ANT_COUNT; 
+            value = DEF_ANT_COUNT;
+        }
+        console.log(`new antCount:${value}`);
+        configs.antCount = value;
     });
 }
 
@@ -38,6 +53,8 @@ export function bindSpawnLocation(configs) {
         console.log(`new spawn location:${configs.spawnLocation}`);
     });
 }
+
+
 
 export function bindGridDraw(configs) {
     const gridDrawInput = document.getElementById("drawGridSelect");

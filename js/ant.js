@@ -10,8 +10,13 @@ export class Ant {
         this.create();
     }
     create() {
-        this.x = Math.floor(this.grids.cols / 2);
-        this.y = Math.floor(this.grids.rows / 2);
+        if (this.configs.spawnLocation === "center") {
+            this.x = Math.floor(this.grids.cols / 2);
+            this.y = Math.floor(this.grids.rows / 2);
+        } else if (this.configs.spawnLocation === "random") {
+            this.x = Math.floor(Math.random() * this.grids.cols);
+            this.y = Math.floor(Math.random() * this.grids.rows);
+        }
         this.direction = this.configs.initialDirection === "random" ? getRandomDirection() : Direction[this.configs.initialDirection.toUpperCase()];
     }
     move() {
@@ -65,5 +70,22 @@ export class Ant {
             this.ctx.closePath();
         }
         this.ctx.fill();
+    }
+}
+
+
+export class Ants {
+    constructor(n, ctx, grids, configs) {
+        this.ants = Array.from({length: n}, (_, i) => new Ant(ctx, grids, configs));
+    }
+    draw() {
+        this.ants.forEach(ant => {
+            ant.draw();
+        });
+    }
+    move() {
+        this.ants.forEach(ant => {
+            ant.move();
+        });
     }
 }

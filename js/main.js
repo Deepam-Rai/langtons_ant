@@ -4,10 +4,11 @@ import {
 import {
     generateColors, ruleStringToMoves
 } from "./utils.js";
-import { Ant } from "./ant.js";
+import { Ants } from "./ant.js";
 import { Grids } from "./grids.js";
 import {
-    bindTimeStep, bindInitialDirection, bindSpawnLocation, bindGridDraw, bindDropdownRules, bindCustomRules
+    bindTimeStep, bindInitialDirection, bindSpawnLocation, bindGridDraw, bindDropdownRules, bindCustomRules,
+    bindAntCount,
 } from "./binders.js";
 
 
@@ -15,7 +16,8 @@ let metas = {
     "canvas": document.getElementById("antCanvas"),
     "simulation": null,
     "steps": 0,
-    "ant": null,
+    "antCount": 1,
+    "ants": [],
     "grids": null,
     "configs": {
         "timeStep": DEF_TIME_STEP,
@@ -36,7 +38,7 @@ metas.grids = new Grids(metas.canvas, metas.configs);
 
 export function resetField() {
     metas.grids.reset();
-    metas.ant = new Ant(metas.ctx, metas.grids, metas.configs);
+    metas.ants = new Ants(metas.configs.antCount, metas.ctx, metas.grids, metas.configs);
     metas.steps = 0;
     document.getElementById("stepCount").textContent = metas.steps;
 }
@@ -56,6 +58,7 @@ export function updateRules(ruleString) {
 bindTimeStep(metas.configs, metas);
 bindInitialDirection(metas.configs);
 bindSpawnLocation(metas.configs);
+bindAntCount(metas.configs);
 bindGridDraw(metas.configs);
 bindDropdownRules();
 bindCustomRules();
@@ -67,8 +70,8 @@ updateRules(ruleSelect.value);
 
 export function updateSimulation() {
     metas.grids.draw();
-    metas.ant.draw();
-    metas.ant.move();
+    metas.ants.draw();
+    metas.ants.move();
 
     metas.steps++;
     document.getElementById("stepCount").textContent = metas.steps;
