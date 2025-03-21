@@ -68,13 +68,7 @@ export function bindGridDraw(configs) {
 export function bindDropdownRules() {
     const ruleSelect = document.getElementById("ruleSelect");
     ruleSelect.addEventListener("change", function () {
-        if (this.value === "custom") {
-            customRuleInput.disabled = false;
-            customRuleInput.value = ""; // Clear input
-        } else {
-            customRuleInput.disabled = true;
-            updateRules(this.value);
-        }
+        updateRules(this.value);
     });
 }
 

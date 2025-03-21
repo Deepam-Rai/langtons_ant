@@ -43,5 +43,4 @@ export const DEF_RULES = [
     {"value": "RWXYLZOW", "label": "RWXYLZOW (Direct Highway)"},
     {"value": "RRLLLRLLLRRR", "label": "RRLLLRLLLRRR (Filled growing triangle)"},
     {"value": "RLRRRLRRRLRLRLR", "label": "RLRRRLRRRLRLRLR (The Glitch Spread)"},
-    {"value": "custom", "label": "Custom"},
 ]
