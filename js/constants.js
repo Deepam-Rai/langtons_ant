@@ -31,3 +31,17 @@ export const DirectionReverse = Object.fromEntries(Object.entries(Direction).map
 // grid types & its constants
 export const RULES = "rules";  // usual grids
 export const VISITS = "visits";  // shows visits heatmap
+
+
+// default populates
+export const DEF_RULES = [
+    {"value": "RL", "label": "RL (Classic)"},
+    {"value": "RLR", "label": "RLR (Grows chaotic)"},
+    {"value": "LLRR", "label": "LLRR (Grows symmetric)"},
+    {"value": "LRRRRRLLR", "label": "LRRRRRLLR (Square filling)"},
+    {"value": "LLRRRLRLRLLR", "label": "LLRRRLRLRLLR (Convoluted Highway)"},
+    {"value": "RWXYLZOW", "label": "RWXYLZOW (Direct Highway)"},
+    {"value": "RRLLLRLLLRRR", "label": "RRLLLRLLLRRR (Filled growing triangle)"},
+    {"value": "RLRRRLRRRLRLRLR", "label": "RLRRRLRRRLRLRLR (The Glitch Spread)"},
+    {"value": "custom", "label": "Custom"},
+]

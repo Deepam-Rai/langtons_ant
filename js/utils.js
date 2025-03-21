@@ -1,4 +1,4 @@
-import { Direction } from "./constants.js";
+import { Direction, DEF_RULES } from "./constants.js";
 import { Ant } from "./ant.js";
 
 export function generateColors(n, baseHue = null) {
@@ -173,4 +173,16 @@ export function resetField(grids, configs, ant, metas) {
     ant = new Ant(metas.ctx, grids, configs);
     metas.steps = 0;
     document.getElementById("stepCount").textContent = metas.steps;
+}
+
+
+export function populateRuleDropdown(domId) {
+    const ruleSelect = document.getElementById(domId);
+    ruleSelect.innerHTML = "";  // clear existing
+    DEF_RULES.forEach(rule => {
+        const option = document.createElement("option");
+        option.value = rule.value;
+        option.textContent = rule.label;
+        ruleSelect.appendChild(option);
+    });
 }

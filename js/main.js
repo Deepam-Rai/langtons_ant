@@ -2,7 +2,7 @@ import {
     WIDTH, HEIGHT, DEF_COLOR, DEF_TIME_STEP,
 } from "./constants.js";
 import {
-    generateColors, ruleStringToMoves
+    generateColors, ruleStringToMoves, populateRuleDropdown
 } from "./utils.js";
 import { Ants } from "./ant.js";
 import { Grids } from "./grids.js";
@@ -54,6 +54,8 @@ export function updateRules(ruleString) {
 }
 
 
+// prepopulate default values
+populateRuleDropdown("ruleSelect");
 // bind dashboard inputs with javascript variables
 bindTimeStep(metas.configs, metas);
 bindInitialDirection(metas.configs);
