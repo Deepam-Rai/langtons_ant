@@ -1,7 +1,34 @@
 // binds html dashboard values to javascript variables
 
-import { DEF_TIME_STEP, DEF_ANT_COUNT } from "./constants.js";
-import { updateSimulation, updateRules } from "./main.js";
+import { DEF_TIME_STEP, DEF_ANT_COUNT, PLAY, PAUSE } from "./constants.js";
+import { updateSimulation, updateRules, draw } from "./main.js";
+import { resetField } from "./main.js";
+
+export function bindRestart(configs, metas){
+    const input = document.getElementById("restart");
+    input.addEventListener("click", function () {
+        clearInterval(metas.simulation); // Stop the current loop
+        resetField();
+        metas.simulation = setInterval(updateSimulation, configs.timeStep); // Restart loop
+        console.log(`restarted simulation.`);
+    });
+}
+
+export function bindPausePlay(configs, metas){
+    const input = document.getElementById("pausePlay");
+    input.innerText = configs.state === PAUSE ? "▶" : "❚❚";
+    input.addEventListener("click", function () {
+        configs.state = configs.state === PLAY ? PAUSE : PLAY;
+        input.innerText = configs.state === PAUSE ? "▶" : "❚❚";
+        if (configs.state === PAUSE) {
+            clearInterval(metas.simulation); // Stop the current loop
+        } else if(configs.state === PLAY) {
+            metas.simulation = setInterval(updateSimulation, configs.timeStep); // Restart loop
+        }
+        console.log(`new pausePlay state:${configs.state}`);
+    });
+}
+
 
 // bind time interval between steps
 export function bindTimeStep(configs, metas){
@@ -61,6 +88,7 @@ export function bindGridDraw(configs) {
     configs.gridDraw = gridDrawInput.value;
     gridDrawInput.addEventListener("change", function () {
         configs.gridDraw = this.value;
+        draw();
         console.log(`new grid to draw:${configs.gridDraw}`);
     });
 }

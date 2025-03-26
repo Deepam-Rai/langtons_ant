@@ -32,6 +32,9 @@ export const DirectionReverse = Object.fromEntries(Object.entries(Direction).map
 export const RULES = "rules";  // usual grids
 export const VISITS = "visits";  // shows visits heatmap
 
+// simulation states
+export const PAUSE = "pause"
+export const PLAY = "play"
 
 // default populates
 export const DEF_RULES = [

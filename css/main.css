@@ -1,3 +1,7 @@
+:root{
+    --dashboard-bg-color: #222
+}
+
 /* Reset styles for consistency */
 * {
     margin: 0;
@@ -15,7 +19,7 @@ body {
 
 #dashboard {
     width: 300px;
-    background: #222;
+    background: var(--dashboard-bg-color);
     color: white;
     padding: 20px;
     display: flex;
@@ -57,6 +61,29 @@ body {
     max-width: 100px;
 }
 
+#dashboard select {
+    width: 100%;
+    max-width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#dashboard .playback-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+#dashboard .playback-control-btn {
+    font-size: 150%;
+    color: white;
+    padding: 5px 10px;
+    background-color: var(--dashboard-bg-color);
+    border-radius: 20%;
+}
+
 #canvas-container {
     flex: 1;
     display: flex;
@@ -92,13 +119,4 @@ canvas {
         width: 100%;
         height: auto;
     }
-}
-
-/* Ensure the select dropdown fits within the dashboard */
-#dashboard select {
-    width: 100%;
-    max-width: 100%;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
 }

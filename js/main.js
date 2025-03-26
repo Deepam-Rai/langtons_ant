@@ -1,5 +1,5 @@
 import {
-    WIDTH, HEIGHT, DEF_COLOR, DEF_TIME_STEP,
+    WIDTH, HEIGHT, DEF_COLOR, DEF_TIME_STEP, PLAY
 } from "./constants.js";
 import {
     generateColors, ruleStringToMoves, populateRuleDropdown
@@ -8,7 +8,7 @@ import { Ants } from "./ant.js";
 import { Grids } from "./grids.js";
 import {
     bindTimeStep, bindInitialDirection, bindSpawnLocation, bindGridDraw, bindDropdownRules, bindCustomRules,
-    bindAntCount,
+    bindAntCount, bindPausePlay, bindRestart
 } from "./binders.js";
 
 
@@ -21,6 +21,7 @@ let metas = {
     "grids": null,
     "configs": {
         "timeStep": DEF_TIME_STEP,
+        "state": PLAY,
         "initialDirection": null,
         "spawnLocation": "random",
         "colors": [],
@@ -57,6 +58,8 @@ export function updateRules(ruleString) {
 // prepopulate default values
 populateRuleDropdown("ruleSelect");
 // bind dashboard inputs with javascript variables
+bindRestart(metas.configs, metas);
+bindPausePlay(metas.configs, metas);
 bindTimeStep(metas.configs, metas);
 bindInitialDirection(metas.configs);
 bindSpawnLocation(metas.configs);
@@ -70,9 +73,12 @@ bindCustomRules();
 updateRules(ruleSelect.value);
 
 
-export function updateSimulation() {
+export function draw() {
     metas.grids.draw();
     metas.ants.draw();
+}
+export function updateSimulation() {
+    draw();
     metas.ants.move();
 
     metas.steps++;

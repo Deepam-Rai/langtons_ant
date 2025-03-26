@@ -168,14 +168,6 @@ export function relativeDirectionToAngle(direction) {
     return angle;
 }
 
-export function resetField(grids, configs, ant, metas) {
-    grids.reset();
-    ant = new Ant(metas.ctx, grids, configs);
-    metas.steps = 0;
-    document.getElementById("stepCount").textContent = metas.steps;
-}
-
-
 export function populateRuleDropdown(domId) {
     const ruleSelect = document.getElementById(domId);
     ruleSelect.innerHTML = "";  // clear existing
