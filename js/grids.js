@@ -1,4 +1,4 @@
-import { GRID_SIZE, RULES, DEF_COLOR, VISITS } from "./constants.js";
+import { RULES, DEF_COLOR, VISITS } from "./constants.js";
 import { generateColors } from "./utils.js";
 
 
@@ -14,8 +14,8 @@ export class Grids {
         this.reset();
     }
     reset() {
-        this.cols = this.canvas.width / GRID_SIZE;
-        this.rows = this.canvas.height / GRID_SIZE;
+        this.cols = this.configs.cols;
+        this.rows = this.configs.rows;
         this.rules = Array.from({ length: this.rows}, () => Array(this.cols).fill(0));
         this.visits = Array.from({ length: this.rows}, () => Array(this.cols).fill(0));
     }
@@ -29,9 +29,9 @@ export class Grids {
                 } else if ( this.configs.gridDraw === VISITS) {
                     ctx.fillStyle = visitColors[this.visits[y][x]];
                 }
-                let posX = Math.floor(x * GRID_SIZE);
-                let posY = Math.floor(y * GRID_SIZE);
-                let size = Math.floor(GRID_SIZE);
+                let posX = Math.floor(x * this.configs.gridSize);
+                let posY = Math.floor(y * this.configs.gridSize);
+                let size = Math.floor(this.configs.gridSize);
                 ctx.fillRect(posX, posY, size, size);
                 ctx.strokeStyle = 'gray';
                 ctx.strokeRect(posX, posY, size, size);

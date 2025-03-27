@@ -1,5 +1,6 @@
 import {
-    WIDTH, HEIGHT, DEF_COLOR, DEF_TIME_STEP, PLAY
+    DEF_ROWS, DEF_COLS, DEF_COLOR, DEF_TIME_STEP, PLAY,
+    DEF_GRID_SIZE
 } from "./constants.js";
 import {
     generateColors, ruleStringToMoves, populateRuleDropdown
@@ -8,7 +9,7 @@ import { Ants } from "./ant.js";
 import { Grids } from "./grids.js";
 import {
     bindTimeStep, bindInitialDirection, bindSpawnLocation, bindGridDraw, bindDropdownRules, bindCustomRules,
-    bindAntCount, bindPausePlay, bindRestart
+    bindAntCount, bindPausePlay, bindRestart, bindRows, bindCols, bindGridSize
 } from "./binders.js";
 
 
@@ -27,18 +28,23 @@ let metas = {
         "colors": [],
         "nextMoves": [],
         "ruleLength": 0,
+        "gridSize": DEF_GRID_SIZE,
+        "rows": DEF_ROWS,
+        "cols": DEF_COLS,
     }
 };
-metas.ctx = metas.canvas.getContext("2d");
-metas.canvas.width = Math.min(WIDTH, window.innerWidth - 20);
-metas.canvas.height = Math.min(HEIGHT, window.innerHeight - 20);
 
-
-metas.grids = new Grids(metas.canvas, metas.configs);
-
-
+export function resetCanvas() {
+    metas.ctx = metas.canvas.getContext("2d");
+    metas.canvas.height = metas.configs.gridSize * metas.configs.rows;
+    metas.canvas.width = metas.configs.gridSize * metas.configs.cols;
+    const container = document.getElementById("canvas-container");
+    container.style.alignItems = container.scrollHeight > container.offsetHeight ? "flex-start" : "center";
+    container.style.justifyContent = container.scrollWidth > container.offsetWidth ? "flex-start" : "center";
+}
 export function resetField() {
-    metas.grids.reset();
+    resetCanvas();
+    metas.grids = new Grids(metas.canvas, metas.configs);
     metas.ants = new Ants(metas.configs.antCount, metas.ctx, metas.grids, metas.configs);
     metas.steps = 0;
     document.getElementById("stepCount").textContent = metas.steps;
@@ -55,11 +61,15 @@ export function updateRules(ruleString) {
 }
 
 
+
 // prepopulate default values
 populateRuleDropdown("ruleSelect");
 // bind dashboard inputs with javascript variables
 bindRestart(metas.configs, metas);
 bindPausePlay(metas.configs, metas);
+bindRows(metas.configs);
+bindCols(metas.configs);
+bindGridSize(metas.configs);
 bindTimeStep(metas.configs, metas);
 bindInitialDirection(metas.configs);
 bindSpawnLocation(metas.configs);
@@ -70,7 +80,7 @@ bindCustomRules();
 
 
 // Initialize with default rule
-updateRules(ruleSelect.value);
+updateRules(ruleSelect.value);  // updates default rules and (re)sets everything.
 
 
 export function draw() {

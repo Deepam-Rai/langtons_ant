@@ -1,4 +1,4 @@
-import { RULES, VISITS, GRID_SIZE, Direction } from "./constants.js";
+import { RULES, VISITS, Direction } from "./constants.js";
 import { relativeDirection, getNextRelativePosition, relativeDirectionToAngle, getRandomDirection } from "./utils.js";
 
 
@@ -39,7 +39,7 @@ export class Ant {
         this.y = (this.y + this.grids.rows) % this.grids.rows;
     }
     draw() {
-        const size = GRID_SIZE; 
+        const size = this.configs.gridSize; 
         const centerX = this.x * size + size / 2;
         const centerY = this.y * size + size / 2;
     

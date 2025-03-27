@@ -1,6 +1,6 @@
-export const WIDTH = 700;
-export const HEIGHT = 700;
-export const GRID_SIZE = 10;
+export const DEF_ROWS = 70;
+export const DEF_COLS = 70;
+export const DEF_GRID_SIZE = 10;
 export const DEF_COLOR = 'white';
 export const DEF_TIME_STEP = 100;
 export const DEF_ANT_COUNT = 1;

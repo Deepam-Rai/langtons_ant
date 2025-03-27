@@ -1,8 +1,8 @@
 // binds html dashboard values to javascript variables
 
-import { DEF_TIME_STEP, DEF_ANT_COUNT, PLAY, PAUSE } from "./constants.js";
+import { DEF_TIME_STEP, DEF_ANT_COUNT, PLAY, PAUSE, DEF_ROWS, DEF_COLS, DEF_GRID_SIZE } from "./constants.js";
 import { updateSimulation, updateRules, draw } from "./main.js";
-import { resetField } from "./main.js";
+import { resetField, resetCanvas } from "./main.js";
 
 export function bindRestart(configs, metas){
     const input = document.getElementById("restart");
@@ -29,6 +29,52 @@ export function bindPausePlay(configs, metas){
     });
 }
 
+
+export function bindRows(configs){
+    const input = document.getElementById("rows");
+    configs.rows = DEF_ROWS;
+    input.value = configs.rows;
+    input.addEventListener("change", function () {
+        let value = parseInt(this.value);
+        if (isNaN(value) || value < 1) {
+            this.value = DEF_ROWS; 
+            value = DEF_ROWS;
+        }
+        console.log(`new rows count:${value}`);
+        configs.rows = value;
+    });
+}
+
+export function bindCols(configs){
+    const input = document.getElementById("cols");
+    configs.cols = DEF_COLS;
+    input.value = configs.cols;
+    input.addEventListener("change", function () {
+        let value = parseInt(this.value);
+        if (isNaN(value) || value < 1) {
+            this.value = DEF_COLS; 
+            value = DEF_COLS;
+        }
+        console.log(`new cols count:${value}`);
+        configs.cols = value;
+    });
+}
+
+export function bindGridSize(configs){
+    const input = document.getElementById("gridSize");
+    configs.gridSize = DEF_GRID_SIZE;
+    input.value = configs.gridSize;
+    input.addEventListener("change", function () {
+        let value = parseInt(this.value);
+        if (isNaN(value) || value < 1) {
+            this.value = DEF_GRID_SIZE; 
+            value = DEF_GRID_SIZE;
+        }
+        console.log(`new grid size:${value}`);
+        configs.gridSize = value;
+        resetCanvas();
+    });
+}
 
 // bind time interval between steps
 export function bindTimeStep(configs, metas){
