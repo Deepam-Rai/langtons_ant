@@ -1,0 +1,40 @@
+<html>
+<head>
+    <link rel="stylesheet" href="./prisoners/css/main.css">
+</head>
+<body>
+    <div id="dashboard">
+        <h2>Prisoners</h2>
+        <p class="playback-controls">
+            <button class="playback-control-btn" id="restart">↻</button>
+            <button class="playback-control-btn" id="pausePlay">▶</button>
+            <button style="visibility: hidden;"></button>
+        </p>
+        <p>
+            Prisoners count:
+            <input type="number" id="prisonersCount" min="1" step="1">
+        </p>
+    </div>
+    <div class="canvas-container">
+        <div class="group-section">
+            <h2>Random Guessing Strategy</h2>
+            <div class="canvas-section">
+                <canvas class="canvas-unit" id="APassCountDistribution"></canvas>
+                <canvas class="canvas-unit" id="AAllPassDistribution"></canvas>
+            </div>
+        </div>
+        <hr>
+        <div class="group-section">
+            <h2>Cycle Following Strategy</h2>
+            <div class="canvas-section">
+                <canvas class="canvas-unit" id="BPassCountDistribution"></canvas>
+                <canvas class="canvas-unit" id="BAllPassDistribution"></canvas>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script>
+    <script type="module" src="./prisoners/js/main.js"></script>
+</body>
+</html>
